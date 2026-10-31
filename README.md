@@ -1,33 +1,20 @@
-# Proyecto SOLID — Parqueadero
+# Proyecto ParqueaderoSOLID
 
-Sistema de cobro mensual de un parqueadero: mensualistas, vehículos que pagan por minuto o por día, bicicletas y casilleros para cascos.
+Este es el proyecto ParqueaderoSOLID. Empezamos con una versión inicial en la carpeta `00-inicio` que traía un código con todo mezclado y violando los cinco principios a propósito (igual que en el ejercicio de nómina). 
 
-Cada carpeta es una versión completa y ejecutable del mismo proyecto. Si alguien se atrasa o su código no compila, copia la carpeta del paso anterior y sigue desde ahí.
+La idea de este repositorio es mostrar cómo arreglar ese desastre paso a paso. Cada carpeta es un paso nuevo donde copié lo de la carpeta anterior y le apliqué el principio correspondiente. Todas las líneas que cambié tienen un comentario que empieza con `// Paso`. 
 
-| Carpeta | Estado |
-|---|---|
-| 00-inicio | Proyecto de partida. Viola los cinco principios a propósito. |
-| 01-responsabilidad-unica | GestorParqueadero dividido: ExportadorCSV y NotificadorSMS. |
-| 02-abierto-cerrado | Vehiculo abstracta, subclases por modelo de cobro, sin switch. Se agrega VehiculoPorDia. Main trae comentado el bloque que provoca el error del paso L. |
-| 03-sustitucion-liskov | Interfaz Fidelizable. Bicicleta extiende Vehiculo directamente. |
-| 04-segregacion-interfaces | ServicioParqueadero dividida en ConMinutos, ConSeguro y ConLavado. |
-| 05-inversion-dependencias | Interfaz RepositorioCobros. GestorParqueadero recibe el repositorio por constructor. RepositorioEnMemoria para probar. |
+Para probar cualquiera de las carpetas, simplemente compilen y ejecuten con:
+`javac *.java && java Main`
 
-Las líneas que cambian en cada paso llevan un comentario que empieza con `// Paso`.
+## Resumen de Cambios (Principios SOLID)
 
-## Qué viola cada principio en 00-inicio
+Aquí dejé todo súper completo para que vean qué fue lo que se le hizo al código en cada paso:
 
-- **S**: `GestorParqueadero` calcula, guarda en la base de datos, exporta el CSV y envía el SMS.
-- **O**: `calcularCobro` usa un `switch` sobre el texto `tipo`; cada modelo de cobro nuevo obliga a modificarlo.
-- **L**: `Bicicleta` hereda `calcularPuntos()` y lanza una excepción.
-- **I**: `ServicioParqueadero` obliga a `Casillero` a escribir `calcularSeguro()` y `solicitarLavados()` vacíos.
-- **D**: `GestorParqueadero` crea con `new` un `RepositorioMySQL`.
-
-## Ejecutar cualquier versión
-```
-cd 00-inicio
-javac *.java && java Main
-```
-
-## Pendiente para el reto
-En 05, GestorParqueadero todavía crea con `new` el exportador y el notificador. El reto (enviar el recibo por WhatsApp o por correo sin modificar GestorParqueadero) consiste en aplicarles lo mismo que al repositorio.
+| Carpeta | Principio SOLID | Problema que había | Lo que agregué / cambié |
+| :--- | :--- | :--- | :--- |
+| **01-responsabilidad-unica** | SRP (Responsabilidad Única) | `GestorParqueadero` hacía de todo: calculaba cobros, guardaba, mandaba SMS y exportaba a CSV. | Saqué la exportación a CSV y el envío del SMS a sus propias clases (`ExportadorCSV` y `NotificadorSMS`). El gestor ahora solo coordina con un método `cerrarMes` y calcula el cobro. |
+| **02-abierto-cerrado** | OCP (Abierto/Cerrado) | Había un `switch` gigante que validaba el tipo de vehículo ("MENSUAL", "MINUTOS"). Si metíamos otro, tocaba modificar el gestor. | Quité el `switch`. Volví `Vehiculo` una clase abstracta y cada modelo de cobro pasó a ser una subclase (`VehiculoMensual`, `VehiculoPorMinutos`). Para demostrarlo, agregué `VehiculoPorDia` sin tocar ninguna clase que ya existía. |
+| **03-sustitucion-liskov** | LSP (Sustitución de Liskov) | La clase `Bicicleta` obligaba a implementar `calcularPuntos()`, pero como no daban puntos, lanzaba una excepción. Prometía algo que no cumplía. | Corregí la jerarquía. Quité ese método de la clase base y creé una interfaz `Fidelizable`. Ahora solo los vehículos que de verdad acumulan puntos implementan esa interfaz y la bici ya no se rompe. |
+| **04-segregacion-interfaces** | ISP (Segregación de Interfaces) | La interfaz `ServicioParqueadero` obligaba a la clase `Casillero` a tener métodos de lavado y seguro vacíos, porque a un casillero no se le hace eso. | Dividí esa interfaz gigante en interfaces chiquitas y específicas por capacidad (`Registrable`, `Asegurable`, `Lavable`). Ahora el casillero solo implementa lo que de verdad usa. |
+| **05-inversion-dependencias** | DIP (Inversión de Dependencias) | El `GestorParqueadero` instanciaba directamente con `new` a `RepositorioMySQL`, quedando amarrado a la base de datos. | Hice que el gestor dependa de una interfaz `Repositorio` que se le pasa por el constructor. Creé un `RepositorioMemoria` para poder probar todo el sistema sin necesidad de conectarme a la base de datos real. |
