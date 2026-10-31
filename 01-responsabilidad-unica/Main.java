@@ -9,15 +9,10 @@ public class Main {
         vehiculos.add(new Bicicleta("BIC-07", "Valentina Díaz", 40000));
 
         GestorParqueadero gestor = new GestorParqueadero();
-        ExportadorCSV exportador = new ExportadorCSV();
         NotificadorSMS notificador = new NotificadorSMS();
-
-        for (Vehiculo v : vehiculos) {
-            double cobro = gestor.calcularCobro(v);
-            gestor.guardar(v, cobro);
-            notificador.enviarRecibo(v, cobro);
-        }
-
+        ExportadorCSV exportador = new ExportadorCSV();
+        
+        gestor.cerrarMes(vehiculos, notificador);
         System.out.println(exportador.exportar(vehiculos, gestor));
     }
 }
