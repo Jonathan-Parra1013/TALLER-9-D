@@ -2,7 +2,7 @@
 
 Este es el proyecto ParqueaderoSOLID. Empezamos con una versión inicial en la carpeta `00-inicio` que traía un código con todo mezclado y violando los cinco principios a propósito (igual que en el ejercicio de nómina). 
 
-La idea de este repositorio es mostrar cómo arreglar ese desastre paso a paso. Cada carpeta es un paso nuevo donde copié lo de la carpeta anterior y le apliqué el principio correspondiente. Todas las líneas que cambié tienen un comentario que empieza con `// Paso`. 
+La idea de este repositorio es mostrar cómo arreglar ese desastre paso a paso. Cada carpeta es un paso nuevo donde copié lo de la carpeta anterior y le apliqué el principio correspondiente. Todas las líneas que cambié tienen un comentario que empieza con `// y alguna cara :D`. 
 
 Para probar cualquiera de las carpetas, simplemente compilen y ejecuten con:
 `javac *.java && java Main`
